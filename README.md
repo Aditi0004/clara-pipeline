@@ -1,6 +1,6 @@
 # Clara AI Pipeline
 
-**Zero-cost, fully local automation pipeline.**
+**Zero-cost, fully local automation pipeline.**  
 Converts demo call transcripts → structured account memos → Retell agent configurations, then updates them with onboarding data.
 
 ---
@@ -8,7 +8,7 @@ Converts demo call transcripts → structured account memos → Retell agent con
 ## Architecture
 
 ```
-Demo Transcript (.txt/.md)
+Demo Transcript (.txt)
         │
         ▼
 [ Pipeline A: scripts/pipeline.py demo ]
@@ -16,7 +16,7 @@ Demo Transcript (.txt/.md)
         ├── outputs/accounts/<ID>/v1/account_memo.json
         └── outputs/accounts/<ID>/v1/retell_agent_spec.json
 
-Onboarding Transcript or JSON
+Onboarding Transcript (.txt)
         │
         ▼
 [ Pipeline B: scripts/pipeline.py onboard ]
@@ -32,78 +32,96 @@ The pipeline uses **Ollama (local LLM)** for intelligent extraction if available
 
 ## Setup
 
-### 1. Prerequisites (all free, all local)
+### Prerequisites (all free, all local)
 
 ```bash
 # Python 3.9+
 python --version
 
-# Optional but recommended: Ollama for smarter extraction
-# Install from https://ollama.ai (free, runs locally)
+# Git
+git --version
+
+# Optional: Ollama for smarter LLM-based extraction
+# Install from https://ollama.ai
 ollama pull llama3
 ```
 
-No paid APIs. No cloud services. No subscriptions.
+No paid APIs. No cloud services. No subscriptions. No Docker required.
 
-### 2. Clone & run
+### Run Pipeline A (Demo → v1)
 
 ```bash
-git clone <your-repo-url>
-cd clara-pipeline
-
-# Run Pipeline A on a demo transcript
-python scripts/pipeline.py demo path/to/demo_transcript.txt --company "Acme Electric"
-
-# Run Pipeline B with onboarding data
-python scripts/pipeline.py onboard <ACCOUNT_ID> path/to/onboarding.txt
-
-# Run on full dataset (5 demo + 5 onboarding files)
-python scripts/pipeline.py batch path/to/dataset/
+python scripts/pipeline.py demo demo_BEN001.txt --company "Ben's Electric Solutions"
 ```
 
-### 3. View diffs
+### Run Pipeline B (Onboarding → v2)
 
 ```bash
-python scripts/diff_viewer.py <ACCOUNT_ID>
+python scripts/pipeline.py onboard BEN001 onboarding_BEN001.txt
+```
+
+### View what changed (diff)
+
+```bash
+python scripts/diff_viewer.py BEN001
+```
+
+### Run all 10 files at once (batch)
+
+```bash
+python scripts/pipeline.py batch dataset/
 ```
 
 ---
 
-## Dataset File Naming (for batch mode)
+## Dataset File Naming (batch mode)
 
-Place files in a folder:
 ```
 dataset/
   demo_1.txt
   demo_2.txt
-  ...
+  demo_3.txt
+  demo_4.txt
+  demo_5.txt
   onboarding_1.txt
   onboarding_2.txt
-  ...
+  onboarding_3.txt
+  onboarding_4.txt
+  onboarding_5.txt
 ```
 
-The number suffix links each demo to its onboarding pair.
+The number suffix links each demo to its matching onboarding file.
 
 ---
 
-## n8n Automation (optional, for webhook-triggered runs)
+## Automation — Make.com (free, no Docker)
 
-### Setup
+Instead of Docker + n8n, this pipeline uses **Make.com free tier** + **ngrok** for webhook-triggered automation. No install required beyond Python.
 
+### How it works
+
+1. Run the local webhook server:
 ```bash
-cd workflows
-docker-compose up -d
+python webhook_server.py
 ```
 
-Then open http://localhost:5678, go to **Workflows → Import**, and import `n8n_workflow.json`.
+2. Expose it to the internet (in a second terminal):
+```bash
+.\ngrok http 8080
+```
 
-### Endpoints (after import & activation)
+3. In Make.com, a **Custom Webhook → HTTP** scenario triggers the pipeline automatically when a POST request is received.
 
-| Endpoint | Method | Body | Description |
-|---|---|---|---|
-| `/webhook/pipeline-a` | POST | `{"transcript_path": "...", "company_name": "..."}` | Run Pipeline A |
-| `/webhook/pipeline-b` | POST | `{"account_id": "...", "onboarding_path": "..."}` | Run Pipeline B |
-| `/webhook/pipeline-batch` | POST | `{"dataset_dir": "..."}` | Batch run |
+### Make.com Webhook URLs
+
+| Endpoint | Description |
+|---|---|
+| `/pipeline-a` | Trigger Pipeline A (demo transcript → v1) |
+| `/pipeline-b` | Trigger Pipeline B (onboarding → v2) |
+
+### Screenshot
+
+See `workflows/make_screenshot.png` for the configured scenario.
 
 ---
 
@@ -133,10 +151,12 @@ outputs/
 | `business_hours` | Days, start time, end time, timezone |
 | `services_supported` | List of services offered |
 | `emergency_definition` | What counts as an emergency |
-| `emergency_routing_rules` | Who to call, in what order |
-| `call_transfer_rules` | Timeout, retries, fail message |
+| `emergency_routing_rules` | Who to call, in what order, VIP clients |
+| `call_transfer_rules` | Timeout, fail message, transfer number |
+| `pricing_policy` | Call-out fee, hourly rate, mention policy |
+| `notification_settings` | Email and SMS for post-call alerts |
 | `integration_constraints` | CRM/platform constraints |
-| `questions_or_unknowns` | Gaps needing onboarding clarification |
+| `questions_or_unknowns` | Gaps still needing confirmation |
 
 ---
 
@@ -146,7 +166,7 @@ outputs/
 |---|---|
 | `agent_name` | Display name |
 | `voice_style` | Gender, tone, speed, language |
-| `system_prompt` | Full agent prompt (business + after-hours flows) |
+| `system_prompt` | Full agent prompt (business hours + after-hours flows) |
 | `key_variables` | Business hours, timezone, transfer numbers |
 | `call_transfer_protocol` | How to transfer, what to say |
 | `fallback_protocol` | What to do if transfer fails |
@@ -156,25 +176,44 @@ outputs/
 
 ## Deploying to Retell
 
-Since the free Retell tier may not allow programmatic agent creation:
+Since the free Retell tier does not allow programmatic agent creation:
 
 1. Go to https://app.retellai.com and create a free account.
 2. Create a new agent manually.
 3. Copy the `system_prompt` from `retell_agent_spec.json` into the agent's system prompt field.
-4. Set the voice, language, and other settings from `voice_style` and `key_variables`.
+4. Set voice, language, and other settings from `voice_style` and `key_variables`.
 5. Configure phone number forwarding to your Retell agent number.
+
+---
+
+## Sample Run — BEN001 (Ben's Electric Solutions)
+
+This repo includes complete outputs for **BEN001** generated from the provided demo and onboarding transcripts.
+
+```
+outputs/accounts/BEN001/v1/account_memo.json        ← from demo call
+outputs/accounts/BEN001/v1/retell_agent_spec.json
+outputs/accounts/BEN001/v2/account_memo.json        ← updated after onboarding
+outputs/accounts/BEN001/v2/retell_agent_spec.json
+outputs/accounts/BEN001/changelog.json              ← 11 fields changed v1→v2
+```
+
+### Key changes confirmed at onboarding (v1 → v2)
+
+| Field | v1 | v2 |
+|---|---|---|
+| Business hours end | TBD | 17:00 (5pm) |
+| Pricing | Unknown | $115 call-out + $98/hr |
+| Emergency client | Vague | GNM Pressure Washing / Shelley Manley |
+| Notification email | Unknown | info@benselectricsolutionsteam.com |
+| Call routing | Unknown | Android conditional forwarding |
+| Questions remaining | 8 unknowns | 3 unknowns |
 
 ---
 
 ## LLM Usage
 
-The pipeline tries Ollama first (http://localhost:11434). If Ollama is not running, it automatically falls back to rule-based regex extraction. **No paid LLM APIs are ever called.**
-
-To use a different local model:
-```python
-# In scripts/pipeline.py, line ~40:
-call_ollama(prompt, model="mistral")  # or any model you've pulled
-```
+The pipeline tries **Ollama** first (http://localhost:11434). If not running, it falls back to rule-based regex extraction automatically. **No paid LLM APIs are ever called.**
 
 ---
 
@@ -182,27 +221,16 @@ call_ollama(prompt, model="mistral")  # or any model you've pulled
 
 - Rule-based extraction is less accurate than LLM for unusual phrasing
 - Batch mode matches demo/onboarding by filename number suffix only
-- Retell API integration is stubbed (manual import required on free tier)
-- No web UI (outputs are JSON files)
+- Retell API integration is manual on free tier
+- ngrok URL changes every time it restarts (update Make.com HTTP module URL accordingly)
+
+---
 
 ## What to Improve with Production Access
 
 - Retell API calls to auto-create/update agents programmatically
-- Whisper-based audio transcription for raw M4A/MP3 inputs
+- Whisper transcription for raw M4A/MP3 audio inputs
 - Supabase or Airtable backend for multi-user account storage
-- Slack/email notifications after each pipeline run
+- Persistent ngrok URL (paid ngrok plan) or self-hosted webhook server
 - Simple React dashboard for reviewing outputs and diffs
-- GPT-4 or Claude API for higher-quality extraction (with cost control)
-
----
-
-## Sample Run (BEN001)
-
-This repo includes pre-generated outputs for `BEN001` (Ben's Electric Solutions) from the provided demo transcript.
-
-```
-outputs/accounts/BEN001/v1/account_memo.json
-outputs/accounts/BEN001/v1/retell_agent_spec.json
-```
-
-The v2 outputs will be generated once the onboarding call or form is received.
+- Claude or GPT-4 API for higher-quality extraction (with cost controls)
