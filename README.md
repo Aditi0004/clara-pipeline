@@ -97,7 +97,9 @@ The number suffix links each demo to its matching onboarding file.
 ## Automation — Make.com (free, no Docker)
 
 Instead of Docker + n8n, this pipeline uses **Make.com free tier** + **ngrok** for webhook-triggered automation. No install required beyond Python.
-
+The core pipeline runs fully locally via Python scripts.
+Make.com automation is optional and only demonstrates webhook orchestration.
+The entire system can run offline using batch mode.
 ### How it works
 
 1. Run the local webhook server:
@@ -224,13 +226,15 @@ The pipeline tries **Ollama** first (http://localhost:11434). If not running, it
 - Retell API integration is manual on free tier
 - ngrok URL changes every time it restarts (update Make.com HTTP module URL accordingly)
 
----
+Idempotency
 
-## What to Improve with Production Access
+Each account is identified using a deterministic account_id.
+Re-running pipelines updates existing versions rather than creating duplicates.
+Existing v1/v2 artifacts are safely overwritten only when inputs change.
 
-- Retell API calls to auto-create/update agents programmatically
-- Whisper transcription for raw M4A/MP3 audio inputs
-- Supabase or Airtable backend for multi-user account storage
-- Persistent ngrok URL (paid ngrok plan) or self-hosted webhook server
-- Simple React dashboard for reviewing outputs and diffs
-- Claude or GPT-4 API for higher-quality extraction (with cost controls)
+## Failure Handling
+
+- If Ollama is unavailable → automatic rule-based extraction
+- If extraction fails → pipeline logs error and skips account
+- Invalid onboarding updates do not overwrite confirmed fields
+- All runs produce execution logs
