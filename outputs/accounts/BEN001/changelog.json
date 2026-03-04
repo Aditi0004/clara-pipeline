@@ -1,0 +1,94 @@
+{
+  "account_id": "BEN001",
+  "from_version": "v1",
+  "to_version": "v2",
+  "generated_at": "2026-03-04T00:00:00Z",
+  "source": "onboarding_call — conducted by Pawan",
+  "total_changes": 11,
+  "changes": [
+    {
+      "field": "business_hours.end",
+      "from": "TBD",
+      "to": "17:00",
+      "reason": "Ben confirmed 'pretty much 8 to 5'. Website says 8-4:30 but Ben said 5pm in practice."
+    },
+    {
+      "field": "business_hours.days",
+      "from": "Monday to Friday (assumed)",
+      "to": "Monday to Friday",
+      "reason": "Confirmed explicitly in onboarding call."
+    },
+    {
+      "field": "pricing_policy",
+      "from": null,
+      "to": {"service_call_fee": 115, "hourly_rate_residential": 98, "half_hour_rate": 49, "mention_policy": "Only if asked"},
+      "reason": "Pricing confirmed in onboarding: $115 call-out, $98/hr, half-hour increments. Clara to mention only if caller asks."
+    },
+    {
+      "field": "notification_settings",
+      "from": null,
+      "to": {"email": "info@benselectricsolutionsteam.com", "sms": "403-975-1773"},
+      "reason": "Ben confirmed email and main number for post-call notifications."
+    },
+    {
+      "field": "emergency_routing_rules.vip_emergency_client",
+      "from": "Unknown — not defined during demo",
+      "to": {
+        "company": "GNM Pressure Washing",
+        "contact": "Shelley Manley",
+        "phone": "403-870-8494",
+        "email": "gm_pressurewash@yahoo.ca",
+        "properties": "~20 Chevron and SOS gas stations, Calgary"
+      },
+      "reason": "Ben confirmed GNM Pressure Washing is the only after-hours emergency client. Gas station pump failures only."
+    },
+    {
+      "field": "emergency_definition",
+      "from": "Vague — no formal definition from demo",
+      "to": "After-hours emergency = GNM/Shelley calling about gas station fault only. All others = non-emergency.",
+      "reason": "Explicitly confirmed in onboarding: only one emergency client exists."
+    },
+    {
+      "field": "call_routing_setup",
+      "from": null,
+      "to": "Android conditional forwarding (no answer / declined). Future: Clara first, transfer to Ben's second number.",
+      "reason": "Ben uses Android. Confirmed call forwarding method. Second number pending."
+    },
+    {
+      "field": "call_transfer_rules.transfer_number",
+      "from": "TBD",
+      "to": "PENDING — Ben's second personal number (to be emailed)",
+      "reason": "Ben confirmed second number is coming but not yet active."
+    },
+    {
+      "field": "call_transfer_rules.timeout_seconds",
+      "from": "TBD",
+      "to": 30,
+      "reason": "Not explicitly stated — defaulting to 30 seconds as industry standard."
+    },
+    {
+      "field": "non_emergency_routing_rules.existing_contractors",
+      "from": "Not mentioned",
+      "to": "Existing steady contractors call field team directly — Clara does not handle these.",
+      "reason": "Ben clarified Clara is only for new clients and general service inquiries."
+    },
+    {
+      "field": "questions_or_unknowns",
+      "from": [
+        "Exact business hours (days and end time)",
+        "Emergency call transfer timeout",
+        "What happens if transfer to Ben fails after hours",
+        "Exact list of VIP numbers that bypass Clara",
+        "Greg contact details and handover timing",
+        "Whether Jobber integration is active",
+        "Weekend availability rules"
+      ],
+      "to": [
+        "Ben's second personal phone number for transfers (Ben to email back)",
+        "Office billing address (never confirmed in either call)",
+        "Call transfer timeout — defaulting to 30s pending confirmation"
+      ],
+      "reason": "Most unknowns resolved during onboarding. 3 items remain open."
+    }
+  ]
+}

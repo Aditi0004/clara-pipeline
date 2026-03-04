@@ -1,0 +1,98 @@
+{
+  "account_id": "BEN001",
+  "version": "v1",
+  "source": "demo_call",
+  "generated_at": "2026-03-04T00:00:00Z",
+
+  "company_name": "Ben's Electric Solutions",
+  "contact_name": "Ben Penoyer",
+  "email": "info@benselectricsolutionsteam.com",
+  "phone": null,
+  "office_address": null,
+
+  "business_hours": {
+    "days": "Monday to Friday (assumed)",
+    "start": "08:00",
+    "end": "18:00",
+    "timezone": "America/Edmonton (Calgary, AB, Canada — assumed MST)",
+    "notes": "Ben mentioned standard hours start at 8am. After 6pm he is generally unavailable."
+  },
+
+  "services_supported": [
+    "Service calls",
+    "Outlet replacements",
+    "Aluminum wiring mitigation",
+    "Panel changes",
+    "EV charger installation",
+    "Hot tub electrical hookup (60A 240V)",
+    "Renovations and troubleshooting",
+    "Residential and commercial projects",
+    "Tenant improvement / infill",
+    "Generator integration (complex setups)",
+    "LED lighting upgrades",
+    "Custom home electrical"
+  ],
+
+  "services_not_supported": [
+    "Gemstone lights (discontinued)",
+    "Full hot tub installation (electrical only)",
+    "Plumbing or gas lines"
+  ],
+
+  "crm_system": "Jobber",
+  "integration_constraints": [
+    "Jobber integration with Clara is listed as 'coming soon' at time of demo",
+    "No confirmed ServiceTrade or other field service platform"
+  ],
+
+  "team_size": {
+    "vans": 3,
+    "journeymen": 3,
+    "apprentices": 0,
+    "subcontractors": "occasional",
+    "operations_manager_incoming": "Greg (start date TBD)"
+  },
+
+  "emergency_definition": [
+    "Gas station pump failures for a specific property manager client",
+    "Any after-hours call that Ben personally determines as emergency",
+    "No formal emergency definition provided during demo — to be confirmed at onboarding"
+  ],
+
+  "emergency_routing_rules": {
+    "primary": "Route directly to Ben Penoyer (sole on-call person)",
+    "fallback": "Unknown — not defined during demo",
+    "notes": "Ben stated he is the only person on call after hours. Greg (incoming ops manager) may take over in future."
+  },
+
+  "non_emergency_routing_rules": {
+    "business_hours": "Clara collects caller name, number, job type, preferred date/time — sends notification to Ben",
+    "after_hours": "Clara collects details, confirms follow-up during business hours next day",
+    "special_numbers": "Certain trusted contractor numbers bypass Clara and ring Ben directly"
+  },
+
+  "call_transfer_rules": {
+    "timeout": "Not specified",
+    "retries": "Not specified",
+    "transfer_fail_message": "Not specified — to be confirmed at onboarding"
+  },
+
+  "after_hours_flow_summary": "Greet caller. Ask purpose. Determine if emergency. If emergency: collect name, number, address and attempt transfer to Ben. If non-emergency: collect details and assure follow-up next business day.",
+
+  "office_hours_flow_summary": "Greet caller. Ask purpose. Collect name, phone number, job type, preferred date/time. Send notification to Ben (email + SMS). Suggest site visit or estimate booking where appropriate.",
+
+  "call_volume_estimate": "20 to 50 calls per week (mix of customers, contractors, inspectors, sales calls)",
+
+  "questions_or_unknowns": [
+    "Exact business hours (days and end time not confirmed — 8am start only)",
+    "Office/billing address not captured in transcript",
+    "Emergency call transfer timeout and fallback behavior",
+    "What happens if transfer to Ben fails after hours",
+    "Exact list of VIP numbers that should bypass Clara",
+    "Greg's contact details and when he takes over as point of contact",
+    "Whether Jobber integration is active by onboarding time",
+    "Weekend availability rules (Ben sometimes takes calls, sometimes defers)"
+  ],
+
+  "notes": "Ben is a sole proprietor electrician in Calgary, AB with ~8 years in business, 30 years experience. He handles all office and after-hours work himself. He is actively growing and bringing on an operations manager (Greg). He uses Jobber as CRM and QuickBooks for accounting. He is brand new to AI — this was his first AI interaction. He agreed to a 3-month starter plan at $249/month (500 min/month). Kickoff call scheduled for the day after the demo."
+}

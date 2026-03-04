@@ -1,0 +1,121 @@
+{
+  "name": "Clara Pipeline — Demo + Onboarding",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pipeline-a",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-demo",
+      "name": "Webhook: Demo Transcript Input",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "command": "cd /app/clara-pipeline && python scripts/pipeline.py demo \"{{ $json.transcript_path }}\" --company \"{{ $json.company_name }}\""
+      },
+      "id": "run-pipeline-a",
+      "name": "Run Pipeline A",
+      "type": "n8n-nodes-base.executeCommand",
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"status\": \"ok\", \"account_id\": $json.stdout.match(/Account ID: (\\w+)/)?.[1] } }}"
+      },
+      "id": "respond-a",
+      "name": "Respond with Account ID",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [750, 300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pipeline-b",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-onboard",
+      "name": "Webhook: Onboarding Input",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 500]
+    },
+    {
+      "parameters": {
+        "command": "cd /app/clara-pipeline && python scripts/pipeline.py onboard \"{{ $json.account_id }}\" \"{{ $json.onboarding_path }}\""
+      },
+      "id": "run-pipeline-b",
+      "name": "Run Pipeline B",
+      "type": "n8n-nodes-base.executeCommand",
+      "position": [500, 500]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"status\": \"ok\", \"version\": \"v2\" } }}"
+      },
+      "id": "respond-b",
+      "name": "Respond with v2 status",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [750, 500]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pipeline-batch",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-batch",
+      "name": "Webhook: Batch Run",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 700]
+    },
+    {
+      "parameters": {
+        "command": "cd /app/clara-pipeline && python scripts/pipeline.py batch \"{{ $json.dataset_dir }}\""
+      },
+      "id": "run-batch",
+      "name": "Run Batch Pipeline",
+      "type": "n8n-nodes-base.executeCommand",
+      "position": [500, 700]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"status\": \"ok\", \"output\": $json.stdout } }}"
+      },
+      "id": "respond-batch",
+      "name": "Respond with batch results",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [750, 700]
+    }
+  ],
+  "connections": {
+    "Webhook: Demo Transcript Input": {
+      "main": [[{"node": "Run Pipeline A", "type": "main", "index": 0}]]
+    },
+    "Run Pipeline A": {
+      "main": [[{"node": "Respond with Account ID", "type": "main", "index": 0}]]
+    },
+    "Webhook: Onboarding Input": {
+      "main": [[{"node": "Run Pipeline B", "type": "main", "index": 0}]]
+    },
+    "Run Pipeline B": {
+      "main": [[{"node": "Respond with v2 status", "type": "main", "index": 0}]]
+    },
+    "Webhook: Batch Run": {
+      "main": [[{"node": "Run Batch Pipeline", "type": "main", "index": 0}]]
+    },
+    "Run Batch Pipeline": {
+      "main": [[{"node": "Respond with batch results", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

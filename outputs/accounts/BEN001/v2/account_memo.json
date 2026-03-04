@@ -1,0 +1,114 @@
+{
+  "account_id": "BEN001",
+  "version": "v2",
+  "source": "onboarding_call",
+  "generated_at": "2026-03-04T00:00:00Z",
+
+  "company_name": "Ben's Electric Solutions",
+  "contact_name": "Ben Penoyer",
+  "email": "info@benselectricsolutionsteam.com",
+  "phone": "403-975-1773",
+  "office_address": null,
+
+  "business_hours": {
+    "days": "Monday to Friday",
+    "start": "08:00",
+    "end": "17:00",
+    "timezone": "America/Edmonton",
+    "notes": "Website says 8am-4:30pm. Ben confirmed 'pretty much 8 to 5'. Using 08:00-17:00."
+  },
+
+  "call_routing_setup": {
+    "current_phase": "Conditional forwarding — Android forwards to Clara only if Ben does not answer or declines",
+    "future_phase": "Once second number active, Clara is first point of contact and transfers to Ben's second number",
+    "second_number_status": "Pending — Ben to provide via email reply",
+    "inbound_scope": "New clients, small jobs, service call inquiries only. Existing contractors call field team directly."
+  },
+
+  "pricing_policy": {
+    "service_call_fee": 115,
+    "hourly_rate_residential": 98,
+    "billing_increments": "Half-hour after call-out",
+    "half_hour_rate": 49,
+    "clara_mention_policy": "Only mention pricing if caller specifically asks. Do NOT proactively bring it up."
+  },
+
+  "notification_settings": {
+    "email": "info@benselectricsolutionsteam.com",
+    "sms_number": "403-975-1773",
+    "trigger": "After every inbound call"
+  },
+
+  "services_supported": [
+    "Service calls",
+    "Outlet replacements",
+    "Aluminum wiring mitigation",
+    "Panel changes",
+    "EV charger installation",
+    "Hot tub electrical hookup (60A 240V)",
+    "Renovations and troubleshooting",
+    "Residential and commercial projects",
+    "Tenant improvement / infill",
+    "Generator integration",
+    "LED lighting upgrades",
+    "Custom home electrical"
+  ],
+
+  "services_not_supported": [
+    "Gemstone lights (discontinued)",
+    "Full hot tub installation (electrical only)",
+    "Plumbing or gas lines"
+  ],
+
+  "crm_system": "Jobber",
+
+  "integration_constraints": [
+    "Jobber integration with Clara listed as coming soon",
+    "No ServiceTrade confirmed"
+  ],
+
+  "emergency_definition": [
+    "After-hours emergency = call from GNM Pressure Washing / Shelley Manley regarding gas station fault",
+    "GNM manages approx. 20 Chevron and SOS gas stations in Calgary",
+    "All other after-hours callers = non-emergency, collect details, follow up next business day"
+  ],
+
+  "emergency_routing_rules": {
+    "primary": "Ben Penoyer — transfer call directly",
+    "after_hours_on_call": "Ben Penoyer",
+    "vip_emergency_client": {
+      "company": "GNM Pressure Washing",
+      "contact_name": "Shelley Manley",
+      "contact_phone": "403-870-8494",
+      "contact_email": "gm_pressurewash@yahoo.ca",
+      "properties": "Approx. 20 Chevron and SOS gas stations, Calgary area",
+      "identification_triggers": ["GNM", "Shelley", "gas station", "Chevron", "SOS", "pump"],
+      "action": "Patch call through to Ben immediately regardless of time"
+    },
+    "fallback": "If transfer fails: apologise, collect name/number/address, assure Ben will call back ASAP"
+  },
+
+  "non_emergency_routing_rules": {
+    "business_hours": "Collect name, phone, job type, preferred date/time. Send email + SMS to Ben.",
+    "after_hours_non_emergency": "Collect name, phone, job description. Confirm follow-up Monday-Friday 8am-5pm.",
+    "existing_contractors": "Not handled by Clara — call field team directly"
+  },
+
+  "call_transfer_rules": {
+    "timeout_seconds": 30,
+    "transfer_number": "Ben's second personal number — PENDING, Ben to provide via email",
+    "transfer_fail_message": "I wasn't able to reach Ben directly right now. I've noted all your details and he will follow up with you as soon as possible."
+  },
+
+  "after_hours_flow_summary": "Greet. Ask purpose. If GNM or gas station emergency: collect name/number/address, patch to Ben immediately. All others: non-emergency, collect details, confirm next-business-day follow-up.",
+
+  "office_hours_flow_summary": "Greet. Ask purpose. Collect name, phone, job description, preferred date/time. Send email+SMS to Ben. Only mention $115 call-out + $98/hr pricing if caller asks.",
+
+  "questions_or_unknowns": [
+    "Ben's second personal phone number for transfers (Ben to email back)",
+    "Office billing address (never confirmed in either call)",
+    "Call transfer timeout — defaulting to 30s pending confirmation"
+  ],
+
+  "notes": "Onboarding by Pawan (co-founder). Base agent already configured before call. Key items confirmed: conditional Android forwarding, pricing only on request, one VIP after-hours client (GNM/Shelley Manley, gas stations). Friday 2pm follow-up for dashboard walkthrough. Go-live target: weekend after Friday call."
+}
